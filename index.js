@@ -1,84 +1,177 @@
 
-getUsers();
-
-
-
-
-function listUsers(data){
+window.onload = function(){
     var userList = document.createElement('ul');
+    var albumList = document.createElement('table');
+    var currentAlbumId = null;
+    var form = document.getElementById('modal_form');
+    var closeModal = document.getElementById('modal_close');
 
-    data.forEach(function(item, i, array){
-        var docItem = document.createElement('li');
+    closeModal.onclick = function () {
+        form.style.display = 'none';
+    };
 
-        docItem.appendChild(document.createTextNode(item.name));
+    getUsers();
 
-        userList.appendChild(docItem);
 
-    });
-    document.body.appendChild(userList);
-    console.log('worked');
-}
 
-function getUsers() {
-    var XHR = ("onload" in new XMLHttpRequest()) ? XMLHttpRequest : XDomainRequest;
-    var xhr = new XHR();
 
-    xhr.open('GET', 'https://jsonplaceholder.typicode.com/users', true);
 
-    xhr.onload = function() {
-        if (xhr.readyState != 4) return;
+    function listUsers(data){
+        data.forEach(function(item, i, array){
+            var docItem = document.createElement('li');
 
-        if (xhr.status != 200) {
-            console.log(xhr.status + ': ' + xhr.statusText);
-        } else {
-            //console.log(xhr.response);
-            var users = JSON.parse(xhr.response);
-            listUsers(users);
+            docItem.className = 'userEntry';
+
+            docItem.appendChild(document.createTextNode(item.name));
+
+            docItem.addEventListener('click',function () {
+                getAlbums(item.id);
+            })
+
+            userList.appendChild(docItem);
+
+        });
+
+        userList.className = 'userEntryTable';
+
+        document.body.appendChild(userList);
+    }
+
+    function listAlbums(data) {
+        clearTable(albumList);
+
+        var docRow = document.createElement('tr');
+        albumList.appendChild(docRow);
+
+        data.forEach(function (item, i, array) {
+            var docItem;
+            docItem = document.createElement('td');
+
+            docItem.appendChild(document.createTextNode(item.title));
+
+            docItem.onclick = function () {
+                if (currentAlbumId !== item.id) {
+
+                    var imageSpace = document.getElementById('image_space');
+                    clearTable(imageSpace);
+
+                    getPhotos(item.id);
+                }
+
+                showModalWindow();
+            };
+
+            docRow.appendChild(docItem);
+
+            if (i % 2 === 1) {
+                docRow = document.createElement('tr');
+                albumList.appendChild(docRow);
+            }
+
+        });
+        //userList.classList.add('userEntry');
+
+        document.body.appendChild(albumList);
+
+        albumList.className = 'albumEntry';
+    }
+
+    function clearTable(doc){
+        while (doc.hasChildNodes()) {
+            doc.removeChild(doc.firstChild);
         }
     }
 
-    xhr.onerror = function() {
-        console.log( 'Ошибка ' + this.status );
+    function listPhotos(data) {
+
+        data.forEach(function (item, i, array) {
+            var docImg;
+            docImg = document.createElement('img');
+
+            docImg.src = item.thumbnailUrl;
+
+            docImg.onclick = function () {
+                console.log(item.title);
+            };
+
+            document.getElementById('image_space').appendChild(docImg);
+
+        });
+
     }
 
-    xhr.send();
+    function getUsers() {
+        var XHR = ("onload" in new XMLHttpRequest()) ? XMLHttpRequest : XDomainRequest;
+        var xhr = new XHR();
 
-}
+        xhr.open('GET', 'https://jsonplaceholder.typicode.com/users', true);
 
-function getAlbums(userId) {
-    var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+            if (xhr.readyState != 4) return;
 
-    xhr.open('GET', 'https://jsonplaceholder.typicode.com/albums/?userId=' + userId, true);
-    xhr.send();
-
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState != 4) return;
-
-        if (xhr.status != 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        } else {
-            //obrabotka)
+            if (xhr.status != 200) {
+                console.log(xhr.status + ': ' + xhr.statusText);
+            } else {
+                //console.log(xhr.response);
+                var users = JSON.parse(xhr.response);
+                listUsers(users);
+            }
         }
 
-    };
-
-}
-
-function getPhotos(AlbumId) {
-    var xhr = new XMLHttpRequest();
-
-    xhr.open('GET', 'https://jsonplaceholder.typicode.com/photos?albumId=' + albumId, true);
-    xhr.send();
-
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState != 4) return;
-
-        if (xhr.status != 200) {
-            alert(xhr.status + ': ' + xhr.statusText);
-        } else {
-            //obrabotka)
+        xhr.onerror = function() {
+            console.log( 'Ошибка ' + this.status );
         }
 
-    };
+        xhr.send();
 
-}
+    }
+
+    function showModalWindow(){
+
+        form.style.opacity = 100;
+        form.style.display = 'block';
+
+    }
+
+    function getAlbums(userId) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('GET', 'https://jsonplaceholder.typicode.com/albums/?userId=' + userId, true);
+        xhr.send();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState != 4) return;
+
+            if (xhr.status != 200) {
+                alert(xhr.status + ': ' + xhr.statusText);
+            } else {
+                //console.log(xhr.response);
+                var albums = JSON.parse(xhr.response);
+                listAlbums(albums);
+            }
+
+        };
+    }
+
+    function getPhotos(albumId) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('GET', 'https://jsonplaceholder.typicode.com/photos?albumId=' + albumId, true);
+        xhr.send();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState != 4) return;
+
+            if (xhr.status != 200) {
+                alert(xhr.status + ': ' + xhr.statusText);
+            } else {
+                //obrabotka)
+                currentAlbumId = albumId;
+                var photos = JSON.parse(xhr.response);
+                listPhotos(photos);
+            }
+
+        };
+
+    }
+};

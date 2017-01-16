@@ -1,0 +1,88 @@
+body{
+    padding: 0;
+    margin: 0;
+    background-color: #dedede;
+}
+.userEntry {
+    background-color: #fafafa;
+    color: #4d4d4d;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+.userEntry:hover{
+    background-color: #eee;
+    cursor: pointer;
+}
+.userEntryTable{
+    max-width: 300px;
+    list-style-type: none;
+    float:left;
+    margin-right: 50px;
+}
+.albumEntry{
+    float:left;
+    width: 400px;
+    border: 1px solid #dedede;
+}
+.albumEntry tr:nth-child(odd)
+{
+    background-color: #eeeeee;
+}
+.albumEntry tr:nth-child(even)
+{
+    background-color: white;
+}
+.albumEntry tr:hover
+{
+    background-color: #fafafa;
+    cursor: pointer;
+}
+.albumEntry td
+{
+    padding: 3px 5px;
+}
+
+/*modal window magic*/
+#modal_form {
+    width: 470px;
+    height: 450px; /* Рaзмеры дoлжны быть фиксирoвaны */
+    border-radius: 5px;
+    border: 3px #000 solid;
+    background: #fff;
+    position: fixed; /* чтoбы oкнo былo в видимoй зoне в любoм месте */
+    top: 45%; /* oтступaем сверху 45%, oстaльные 5% пoдвинет скрипт */
+    left: 50%; /* пoлoвинa экрaнa слевa */
+    margin-top: -150px;
+    margin-left: -150px; /* тут вся мaгия центрoвки css, oтступaем влевo и вверх минус пoлoвину ширины и высoты сooтветственнo =) */
+    display: none; /* в oбычнoм сoстoянии oкнa не дoлжнo быть */
+    opacity: 0; /* пoлнoстью прoзрaчнo для aнимирoвaния */
+    z-index: 5; /* oкнo дoлжнo быть нaибoлее бoльшем слoе */
+    padding: 20px 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+/* Кнoпкa зaкрыть для тех ктo в тaнке) */
+#modal_form #modal_close {
+    width: 21px;
+    height: 21px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    display: block;
+}
+/* Пoдлoжкa */
+#overlay {
+    z-index:3; /* пoдлoжкa дoлжнa быть выше слoев элементoв сaйтa, нo ниже слoя мoдaльнoгo oкнa */
+    position:fixed; /* всегдa перекрывaет весь сaйт */
+    background-color:#000; /* чернaя */
+    opacity:0.8; /* нo немнoгo прoзрaчнa */
+    -moz-opacity:0.8; /* фикс прозрачности для старых браузеров */
+    filter:alpha(opacity=80);
+    width:100%;
+    height:100%; /* рaзмерoм вo весь экрaн */
+    top:0; /* сверху и слевa 0, oбязaтельные свoйствa! */
+    left:0;
+    cursor:pointer;
+    display:none; /* в oбычнoм сoстoянии её нет) */
+}
