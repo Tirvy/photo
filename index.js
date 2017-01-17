@@ -10,11 +10,18 @@ window.onload = function(){
         form.style.display = 'none';
     };
 
+    var filterField = document.getElementById('filter_field');
+    filterField.onkeyup = filterAlbums;
+
+    var curAlbumsData;
+
     getUsers();
 
 
 
-
+    function filterAlbums() {
+        listAlbums();
+    }
 
     function listUsers(data){
         data.forEach(function(item, i, array){
@@ -37,13 +44,15 @@ window.onload = function(){
         document.body.appendChild(userList);
     }
 
-    function listAlbums(data) {
+    function listAlbums() {
+        var data = curAlbumsData.filter(checkAlbumValue);
         clearTable(albumList);
 
         var docRow = document.createElement('tr');
         albumList.appendChild(docRow);
 
         data.forEach(function (item, i, array) {
+
             var docItem;
             docItem = document.createElement('td');
 
@@ -76,6 +85,10 @@ window.onload = function(){
         albumList.className = 'albumEntry';
     }
 
+    function checkAlbumValue(elem) {
+        return elem.title.indexOf(filterField.value) != -1;
+    }
+
     function clearTable(doc){
         while (doc.hasChildNodes()) {
             doc.removeChild(doc.firstChild);
@@ -83,6 +96,7 @@ window.onload = function(){
     }
 
     function listPhotos(data) {
+        data = data.sort(sortPhotos);
 
         data.forEach(function (item, i, array) {
             var docImg;
@@ -96,8 +110,16 @@ window.onload = function(){
 
             document.getElementById('image_space').appendChild(docImg);
 
+            //console.log(item.title);
+
         });
 
+    }
+
+    function sortPhotos(elem1, elem2) {
+        if (elem2.title < elem1.title)
+            return 1;
+        return -1;
     }
 
     function getUsers() {
@@ -145,9 +167,10 @@ window.onload = function(){
             if (xhr.status != 200) {
                 alert(xhr.status + ': ' + xhr.statusText);
             } else {
-                //console.log(xhr.response);
-                var albums = JSON.parse(xhr.response);
-                listAlbums(albums);
+
+                curAlbumsData = JSON.parse(xhr.response);
+
+                listAlbums();
             }
 
         };
